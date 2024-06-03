@@ -11,7 +11,7 @@ class Ahorcado{
         // INTRODUCE AQUI LA PALABRA
         //  (May ó min no importa)
         // =========================
-        String word = "aereOPuerTo";
+        String word = " ";
         // =========================
 
         // ===========================================================================================
