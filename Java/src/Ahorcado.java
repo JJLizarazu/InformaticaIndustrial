@@ -1,5 +1,8 @@
-import java.util.*;
-class Ahorcado{
+import java.util.Arrays;
+import java.util.Scanner;
+
+public class AhorcadoTercero {
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         System.out.println("=======================");
@@ -15,257 +18,240 @@ class Ahorcado{
         // =========================
 
         // ===========================================================================================
-        int numberOfVowels = word.length(); // ALMACENAR CANTIDAD DE LETRAS EN UNA VARIABLE
-        int attempt = 0, auxAttempt = 0, auxVowels = 0; // INTENTOS, AUXILIAR DE INTENTOS, AUXILIAR DE VOCALES
-        String vowel, vowelUpperCase, auxCorrectVowel = " _ "; // VOCAL QUE INTRODUCE EL USUARIO
-        int correctVowel = 0;
-        String[] vowelOfWordFinded = new String[numberOfVowels]; // ALMACENAR LAS VOCALES ENCONTRADAS
-        String[] arrayOfWord = new String[numberOfVowels]; // SEPARAR LA PALABRA EN LETRAS EN UNA MATRIZ
+        int attempt = 0, MAX_ATTEMPTS = 6, points = 0; // INTENTOS, NR. MAXIMO DE INTENTOS, AUXILIAR DE VOCALES ENCONTRADAS
+        String userGuess; // VOCAL QUE INTRODUCE EL USUARIO
+        String[] hint = new String[word.length()]; // PARA MOSTRAR LETRAS ENCONTRADAS/ FALTANTES
+        Arrays.fill(hint, "_");
         // ===========================================================================================
 
+        // ===========================================================================================
+        // OBTENER INFO DE LA PALABRA COMO CONJUNTO (STRING) / MATRIZ DE POSICIONES DE CADA LETRA
         // ==============================================================
-        // CONVERTIR LA PALABRA EN ARRAY / RELLENAR LA MATRIZ CON ESPACIOS
-        // ==============================================================
-        for(int i = 0 ; i < numberOfVowels ; i++){
-            arrayOfWord[i] = String.valueOf(word.toUpperCase().charAt(i));
-        }
-        for(int i = 0 ; i < numberOfVowels ; i++){
-            vowelOfWordFinded[i] = "_";
-        }
-        // ==============================================================
+        String lettersSet = obtainLetterSet(word); // ALMACENA EL CONJUNTO DE LETRAS
+        int[][] positions = obtainPositionsOfLetters(word, lettersSet); // ALMACENAR LAS POSICIONES DE LAS VOCALES
+        // ===========================================================================================
 
         //===============================
-        // DO - WHILE
+        // WHILE
         //===============================
-        do {
+        while (attempt < MAX_ATTEMPTS && points < lettersSet.length()) {
             // =================================
-            // MOSTRAR EL AHORCADO CON UN SWITCH
+            // MOSTRAR EL AHORCADO
             // =================================
-            switch (attempt){
-                case 0:
-                    attemp0();
-                    break;
-                case 1:
-                    attemp1();
-                    break;
-                case 2:
-                    attemp2();
-                    break;
-                case 3:
-                    attemp3();
-                    break;
-                case 4:
-                    attemp4();
-                    break;
-                case 5:
-                    attemp5();
-                    break;
-            }
+            System.out.println(attempts[attempt]);
+
 
             // ===========================================
             //             PISTAS DE LA PALABRA
-            hintsOfWord(vowelOfWordFinded, numberOfVowels);
+            //hintsOfWord(vowelOfWordFinded, numberOfVowels);
+            System.out.println(String.join(" ", hint));
             // ===========================================
             spaces();
 
             // ========================
             //   INTETOS RESTANTES
             remainingAttempts(attempt);
-            // ========================
             spaces();
+            // ========================
 
             // ====================================
             //         INGRESE UNA LETRA
             // ====================================
             System.out.print("Ingrese una letra: ");
-            vowel = sc.nextLine();
-            vowelUpperCase = vowel.toUpperCase();
+            userGuess = sc.nextLine();
+            if (userGuess.length() != 1 || userGuess.matches("\\d")) {
+                System.out.println("Valor invalido, debes ingresar una sola letra.");
+                continue;
+            }
+            userGuess = userGuess.toLowerCase(); //vowelUpperCase = vowel.toUpperCase();
             // ====================================
             spaces();
 
             // ============================================================
-            // AÑADIR LA VOCAL ENCONTRADA A LA MATRIZ DE VOCALES ENCONTRADAS
+            // VERIFICAR SI EL USUARIO ADIVINA UNA VOCAL DEL CONJUNTO
             //       AUMENTAR LOS INTENTOS EN CASO DE NO SER ASI
+            //       AUMENTAR LOS PUNTOS EN CASO DE SER ASI
             // ============================================================
-            for(int i = 0 ; i < numberOfVowels ; i++) {
-                if (vowelUpperCase.equals(arrayOfWord[i].toUpperCase())) {
-                    vowelOfWordFinded[i] = vowelUpperCase;
+            int letterIndex = userGuess.isEmpty() ? -1 : lettersSet.indexOf(userGuess);
+            if (letterIndex != -1) {
+                for (int pos : positions[letterIndex]) {
+                    hint[pos] = userGuess;// String.valueOf(conjunto.charAt(letterIndex)); //
                 }
-                if (!vowelUpperCase.equals(arrayOfWord[i].toUpperCase())) {
-                    auxAttempt++;
-                }
-            }
-            if (auxAttempt >= numberOfVowels){
+                points++;
+            } else {
+                System.out.println("Esa letra no pertenece a la palabra.");
                 attempt++;
             }
-            // ============================================================
-
-            // ============================================================
-            //        COMPROBAR SI LA PALABRA HA SIDO ENCONTRADA
-            // ============================================================
-            for(int i = 0 ; i < numberOfVowels ; i++){
-                if(arrayOfWord[i].equals(vowelOfWordFinded[i])) {
-                    auxVowels++;
-                }
-            }
-            // ============================================================
-
-            // ==============================
-            //  MENSAJE DE GANADO O PERDIDO
-            // ==============================
-            if(auxVowels == numberOfVowels){
-                attempt+=6;
-                finalAttempWin(word);
-            } else if (attempt >= 6){
-                finalAttempFail(word);
-            }
-            // ==============================
-            // ========================
-            //  RETORNAR CONTADORES A 0
-            // ========================
-            auxAttempt = 0;
-            auxVowels = 0;
-            // ========================
-        } while (attempt < 6);
-    }
-
-    static void hintsOfWord(String vowelOfWordFinded[], int numberOfVowels){
-        for(int i = 0 ; i < numberOfVowels ; i++){
-            System.out.print(vowelOfWordFinded[i] + " ");
         }
+        // ============================================================
+
+        // ==============================
+        //  MENSAJE DE GANADO O PERDIDO
+        // ==============================
+        System.out.printf(attempt < 6 ? ganaste : perdiste, word);
+        // ==============================
     }
 
-    static void spaces(){
+    public static String obtainLetterSet(String word) {
+        // System.out.println("WORD: " + word);
+        StringBuilder letterSet = new StringBuilder();
+        for (int i = 0; i < word.length(); i++) {
+            if (letterSet.indexOf(String.valueOf(word.charAt(i))) == -1) {
+                letterSet.append(word.charAt(i));
+            }
+        }
+        // System.out.println("letterSEt: " + letterSet);
+        return letterSet.toString();
+    }
+
+    public static int[][] obtainPositionsOfLetters(String word, String letterSet) {
+        String[] letterPositionsStr = new String[letterSet.length()];
+        Arrays.fill(letterPositionsStr, "");
+        for (int letter = 0; letter < word.length(); letter++) {
+            letterPositionsStr[letterSet.indexOf(word.charAt(letter))] += letter + " ";
+        }
+        // Arrays.asList(letterPositionsStr).forEach(System.out::println);
+        int[][] positions = new int[letterSet.length()][];
+        for (int letter = 0; letter < letterSet.length(); letter++) {
+            String[] posicionesStr = letterPositionsStr[letter].split(" ");
+            positions[letter] = new int[posicionesStr.length];
+            int i = 0;
+            for (String posStr : posicionesStr) {
+                positions[letter][i++] = Integer.parseInt(posStr);
+            }
+        }
+        // System.out.println("++++++++++++\n" + Arrays.deepToString(positions) + "\n++++++++++++");
+        return positions;
+    }
+
+    static void spaces() {
         System.out.println(" ");
         System.out.println(" ");
     }
 
-    static void remainingAttempts(int attempt){
+    static void remainingAttempts(int attempt) {
         System.out.println("INTENTOS RESTANTE -> " + (6 - attempt));
     }
 
-    static void attemp0(){
-        System.out.println(" _________");
-        System.out.println(" |");
-        System.out.println(" |");
-        System.out.println(" |");
-        System.out.println(" |");
-        System.out.println(" |");
-        System.out.println(" |");
-        System.out.println(" |");
-        System.out.println(" |");
-        System.out.println(" |");
-        System.out.println(" |");
-        System.out.println("----");
-        System.out.println(" ");
-    }
+    static String attemp0 = " _________" +
+            System.lineSeparator() + " |" +
+            System.lineSeparator() + " |" +
+            System.lineSeparator() + " |" +
+            System.lineSeparator() + " |" +
+            System.lineSeparator() + " |" +
+            System.lineSeparator() + " |" +
+            System.lineSeparator() + " |" +
+            System.lineSeparator() + " |" +
+            System.lineSeparator() + " |" +
+            System.lineSeparator() + " |" +
+            System.lineSeparator() + "----" +
+            System.lineSeparator() + " " +
+            System.lineSeparator();
 
-    static void attemp1(){
-        System.out.println(" _________");
-        System.out.println(" |      ¡");
-        System.out.println(" |    -----");
-        System.out.println(" |   | o o |");
-        System.out.println(" |    --~--");
-        System.out.println(" |");
-        System.out.println(" |");
-        System.out.println(" |");
-        System.out.println(" |");
-        System.out.println(" |");
-        System.out.println(" |");
-        System.out.println("----");
-        System.out.println(" ");
-    }
+    static String attemp1 =
+            " _________" +
+                    System.lineSeparator() + " |      ¡" +
+                    System.lineSeparator() + " |    -----" +
+                    System.lineSeparator() + " |   | o o |" +
+                    System.lineSeparator() + " |    --~--" +
+                    System.lineSeparator() + " |" +
+                    System.lineSeparator() + " |" +
+                    System.lineSeparator() + " |" +
+                    System.lineSeparator() + " |" +
+                    System.lineSeparator() + " |" +
+                    System.lineSeparator() + " |" +
+                    System.lineSeparator() + "----" +
+                    System.lineSeparator() + " " + System.lineSeparator();
 
-    static void attemp2(){
-        System.out.println(" _________");
-        System.out.println(" |      ¡");
-        System.out.println(" |    -----");
-        System.out.println(" |   | o o |");
-        System.out.println(" |    --~--");
-        System.out.println(" |      |");
-        System.out.println(" |      |");
-        System.out.println(" |      |");
-        System.out.println(" |");
-        System.out.println(" |");
-        System.out.println(" |");
-        System.out.println("----");
-        System.out.println(" ");
-    }
+    static String attemp2 =
+            " _________" +
+                    System.lineSeparator() + " |      ¡" +
+                    System.lineSeparator() + " |    -----" +
+                    System.lineSeparator() + " |   | o o |" +
+                    System.lineSeparator() + " |    --~--" +
+                    System.lineSeparator() + " |      |" +
+                    System.lineSeparator() + " |      |" +
+                    System.lineSeparator() + " |      |" +
+                    System.lineSeparator() + " |" +
+                    System.lineSeparator() + " |" +
+                    System.lineSeparator() + " |" +
+                    System.lineSeparator() + "----" +
+                    System.lineSeparator() + " " + System.lineSeparator();
 
-    static void attemp3(){
-        System.out.println(" _________");
-        System.out.println(" |      ¡");
-        System.out.println(" |    -----");
-        System.out.println(" |   | o o |");
-        System.out.println(" |    --~--");
-        System.out.println(" |      |");
-        System.out.println(" |      |");
-        System.out.println(" |      |");
-        System.out.println(" |     /");
-        System.out.println(" |    /");
-        System.out.println(" |   /");
-        System.out.println("----");
-        System.out.println(" ");
-    }
+    static String attemp3 =
+            " _________" +
+                    System.lineSeparator() + " |      ¡" +
+                    System.lineSeparator() + " |    -----" +
+                    System.lineSeparator() + " |   | o o |" +
+                    System.lineSeparator() + " |    --~--" +
+                    System.lineSeparator() + " |      |" +
+                    System.lineSeparator() + " |      |" +
+                    System.lineSeparator() + " |      |" +
+                    System.lineSeparator() + " |     /" +
+                    System.lineSeparator() + " |    /" +
+                    System.lineSeparator() + " |   /" +
+                    System.lineSeparator() + "----" +
+                    System.lineSeparator() + " " + System.lineSeparator();
 
-    static void attemp4(){
-        System.out.println(" _________");
-        System.out.println(" |      ¡");
-        System.out.println(" |    -----");
-        System.out.println(" |   | o o |");
-        System.out.println(" |    --~--");
-        System.out.println(" |      |");
-        System.out.println(" |      |");
-        System.out.println(" |      |");
-        System.out.println(" |     / \\");
-        System.out.println(" |    /   \\");
-        System.out.println(" |   /     \\");
-        System.out.println("----");
-        System.out.println(" ");
-    }
+    static String attemp4 =
+            " _________" +
+                    System.lineSeparator() + " |      ¡" +
+                    System.lineSeparator() + " |    -----" +
+                    System.lineSeparator() + " |   | o o |" +
+                    System.lineSeparator() + " |    --~--" +
+                    System.lineSeparator() + " |      |" +
+                    System.lineSeparator() + " |      |" +
+                    System.lineSeparator() + " |      |" +
+                    System.lineSeparator() + " |     / \\" +
+                    System.lineSeparator() + " |    /   \\" +
+                    System.lineSeparator() + " |   /     \\" +
+                    System.lineSeparator() + "----" +
+                    System.lineSeparator() + " " + System.lineSeparator();
 
-    static void attemp5(){
-        System.out.println(" _________");
-        System.out.println(" |      ¡");
-        System.out.println(" |    -----");
-        System.out.println(" |   | o o |");
-        System.out.println(" |    --~--");
-        System.out.println(" |     /|");
-        System.out.println(" |    / |");
-        System.out.println(" |   /  |");
-        System.out.println(" |     / \\");
-        System.out.println(" |    /   \\");
-        System.out.println(" |   /     \\");
-        System.out.println("----");
-        System.out.println(" ");
-    }
+    static String attempt5 =
+            " _________" +
+                    System.lineSeparator() + " |      ¡" +
+                    System.lineSeparator() + " |    -----" +
+                    System.lineSeparator() + " |   | o o |" +
+                    System.lineSeparator() + " |    --~--" +
+                    System.lineSeparator() + " |     /|" +
+                    System.lineSeparator() + " |    / |" +
+                    System.lineSeparator() + " |   /  |" +
+                    System.lineSeparator() + " |     / \\" +
+                    System.lineSeparator() + " |    /   \\" +
+                    System.lineSeparator() + " |   /     \\" +
+                    System.lineSeparator() + "----" +
+                    System.lineSeparator() + " " + System.lineSeparator();
 
-    static void finalAttempFail(String word){
-        System.out.println(" _________");
-        System.out.println(" |      ¡");
-        System.out.println(" |    -----");
-        System.out.println(" |   | o o |");
-        System.out.println(" |    --~--");
-        System.out.println(" |     /|\\");
-        System.out.println(" |    / |  \\");
-        System.out.println(" |   /  |   \\");
-        System.out.println(" |     / \\");
-        System.out.println(" |    /   \\");
-        System.out.println(" |   /     \\");
-        System.out.println("----");
-        System.out.println(" ");
-        System.out.println("================");
-        System.out.println("   ¡PERDISTE!   ");
-        System.out.println(" LA PALABRA ERA ");
-        System.out.println("  -> " + word.toUpperCase() + " <-");
-        System.out.println("================");
-    }
-    static void finalAttempWin(String word){
-        System.out.println(" ");
-        System.out.println("================");
-        System.out.println("   ¡GANASTE!   ");
-        System.out.println(" LA PALABRA ERA ");
-        System.out.println("  -> " + word.toUpperCase() + " <-");
-        System.out.println("================");
-    }
+    static String attempt6 =
+            " _________" +
+                    System.lineSeparator() + " |      ¡" +
+                    System.lineSeparator() + " |    -----" +
+                    System.lineSeparator() + " |   | o o |" +
+                    System.lineSeparator() + " |    --~--" +
+                    System.lineSeparator() + " |     /|\\" +
+                    System.lineSeparator() + " |    / |  \\" +
+                    System.lineSeparator() + " |   /  |   \\" +
+                    System.lineSeparator() + " |     / \\" +
+                    System.lineSeparator() + " |    /   \\" +
+                    System.lineSeparator() + " |   /     \\" +
+                    System.lineSeparator() + "----" +
+                    System.lineSeparator() + " " + System.lineSeparator();
+
+    static String perdiste =
+            System.lineSeparator() + "================" +
+                    System.lineSeparator() + "   ¡PERDISTE!   " +
+                    System.lineSeparator() + " LA PALABRA ERA " +
+                    System.lineSeparator() + "  -> " + "%s".toUpperCase() + " <-" +
+                    System.lineSeparator() + "================";
+
+    static String ganaste =
+            System.lineSeparator() + " " +
+                    System.lineSeparator() + "================" +
+                    System.lineSeparator() + "   ¡GANASTE!   " +
+                    System.lineSeparator() + " LA PALABRA ERA " +
+                    System.lineSeparator() + "  -> " + "%s".toUpperCase() + " <-" +
+                    System.lineSeparator() + "================";
+
+    static String[] attempts = {attemp0, attemp1, attemp2, attemp3, attemp4, attempt5, attempt6};
 }
