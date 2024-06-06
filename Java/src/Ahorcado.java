@@ -1,7 +1,7 @@
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class AhorcadoTercero {
+public class Ahorcado {
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
