@@ -11,7 +11,7 @@ class Ahorcado{
         // INTRODUCE AQUI LA PALABRA
         //  (May ó min no importa)
         // =========================
-        String word = " ";
+        String word = "Adrian";
         // =========================
 
         // ===========================================================================================
@@ -88,7 +88,7 @@ class Ahorcado{
             //       AUMENTAR LOS INTENTOS EN CASO DE NO SER ASI
             // ============================================================
             for(int i = 0 ; i < numberOfVowels ; i++) {
-                if (vowelUpperCase.equals(arrayOfWord[i].toUpperCase())) {
+                if (vowel.equalsIgnoreCase(arrayOfWord[i])){
                     vowelOfWordFinded[i] = vowelUpperCase;
                 }
                 if (!vowelUpperCase.equals(arrayOfWord[i].toUpperCase())) {
