@@ -20,9 +20,11 @@ class Proyecto_1{
 
     static void showSelectorOptions(int menuSelector, ArrayList farmacos, ArrayList farmacosQuantity, ArrayList farmacosPrice){
         String removeFarmaco;
+        String changePriceFarmaco;
         String changeQuantityFarmaco;
         int quantityToChangeFarmaco = 0;
         int newValueToChange;
+        float newValueToChangePrice;
         //
         String farmaco;
         float priceFarmaco;
@@ -36,6 +38,7 @@ class Proyecto_1{
         int selectorRemove;
         int selectorChangeQuantity;
         int selectorRemoveLote = 0;
+        int selectorChangePrice = 0;
         int selectorShowInventory;
         // ETC
         int positionFarmaco = 0;
@@ -160,7 +163,12 @@ class Proyecto_1{
                                             System.out.println("                                       [------------------------------------]");
                                             System.out.println("                                       |    INGRESE UN FÁRMACO HA REMOVER   |");
                                             System.out.println("                                       [------------------------------------]");
+                                            System.out.println("                                       |      PARA VOLVER INGRESAR [ 0 ]    |");
+                                            System.out.println("                                       [------------------------------------]");
                                             System.out.print("                                       -> "); removeFarmaco = scc.nextLine();
+                                            if (removeFarmaco.equalsIgnoreCase("0")){
+                                                break;
+                                            }
                                             for(int i = 0 ; i < farmacos.size() ; i++){
                                                 if(removeFarmaco.equalsIgnoreCase((String) farmacos.get(i))){
                                                     positionFarmaco = i;
@@ -205,16 +213,16 @@ class Proyecto_1{
                                                 System.out.println("                                       |------------------------------------|");
                                                 System.out.println("                                       |      EL INVENTARIO ESTA VACÍO      |");
                                                 System.out.println("                                       |-----|------------------------------|");
-                                                System.out.println("                                       |  2  |            VOLVER            |");
+                                                System.out.println("                                       |  1  |            VOLVER            |");
                                                 System.out.println("                                       |-----|------------------------------|");
                                                 System.out.print("                                       -> ");
                                                 selectorRemoveLote = sc.nextInt();
                                                 cleanScreen();
                                             } else {
                                                 System.out.println("                                       |-----|------------------------------|");
-                                                System.out.println("                                       |  1  |       QUITAR OTRO LOTE       |");
+                                                System.out.println("                                       |  1  |            VOLVER            |");
                                                 System.out.println("                                       |-----|------------------------------|");
-                                                System.out.println("                                       |  2  |            VOLVER            |");
+                                                System.out.println("                                       |  2  |       QUITAR OTRO LOTE       |");
                                                 System.out.println("                                       |-----|------------------------------|");
                                                 System.out.print("                                       -> ");
                                                 selectorRemoveLote = sc.nextInt();
@@ -229,11 +237,12 @@ class Proyecto_1{
                                                 }
                                             }
                                             //
-                                        } while (selectorRemoveLote != 2);
+                                        } while (selectorRemoveLote != 1);
                                         break;
                                     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                                     case 2:                                                    // CAMBIAR CANTIDAD
                                     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                                        int farmacoNoExist = 0;
                                         if (farmacos.isEmpty()) {
                                             System.out.println("                                       |------------------------------------|");
                                             System.out.println("                                       |      EL INVENTARIO ESTA VACÍO      |");
@@ -283,12 +292,15 @@ class Proyecto_1{
                                                     for(int i = 0 ; i < farmacos.size() ; i++){
                                                         if(changeQuantityFarmaco.equalsIgnoreCase((String) farmacos.get(i))){
                                                             positionFarmaco = i;
+                                                        } else {
+                                                            farmacoNoExist++;
                                                         }
                                                     }
-                                                    if (!changeQuantityFarmaco.equalsIgnoreCase((String) farmacos.get(positionFarmaco))) {
+                                                    if (farmacoNoExist < farmacos.size()) {
                                                         System.out.println("                                       ______________________________________");
                                                         System.out.println("                                       |        ESE FARMACO NO EXISTE       |");
                                                         System.out.println("                                       [------------------------------------]");
+                                                        break;
                                                     }
                                                     //
                                                     for(Object farmacoLengthMed: farmacos){
@@ -347,6 +359,7 @@ class Proyecto_1{
                                                         System.out.println("                                       ______________________________________");
                                                         System.out.println("                                       |        ESE FARMACO NO EXISTE       |");
                                                         System.out.println("                                       [------------------------------------]");
+                                                        break;
                                                     }
                                                     //
                                                     for(Object farmacoLengthMed: farmacos){
@@ -381,8 +394,102 @@ class Proyecto_1{
                                         } while (selectorChangeQuantity != 3);
                                         break;
                                     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                                    case 3:                                       // CAMBIAR PRECIO
+                                    case 3:                                                                // CAMBIAR PRECIO
                                     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                                        cleanScreen();
+                                        farmacoNoExist = 0;
+                                        if (farmacos.isEmpty()) {
+                                            System.out.println("                                       |------------------------------------|");
+                                            System.out.println("                                       |      EL INVENTARIO ESTA VACÍO      |");
+                                            System.out.println("                                       |-----|------------------------------|");
+                                            System.out.println("                                       |  1  |            VOLVER            |");
+                                            System.out.println("                                       |-----|------------------------------|");
+                                            System.out.print("                                       -> ");
+                                            selectorRemoveLote = sc.nextInt();
+                                            break;
+                                        }
+                                        do {
+                                            cleanScreen();
+                                            //
+                                            for (Object med : farmacos){
+                                                System.out.printf("                                                   | %-" + maxLengthMed + "s \n", med);
+                                                System.out.println("                                       --------------------------------------");
+                                            }
+                                            //
+                                            System.out.println("                                       ______________________________________");
+                                            System.out.println("                                       |            CAMBIAR PRECIO          |");
+                                            System.out.println("                                       [------------------------------------]");
+                                            System.out.println("                                       |          INGRESE UN FÁRMACO        |");
+                                            System.out.println("                                       [------------------------------------]");
+                                            System.out.println("                                       |      PARA VOLVER, INGRESAR [ 0 ]   |");
+                                            System.out.println("                                       [------------------------------------]");
+                                            System.out.print("                                       -> "); changePriceFarmaco = scc.nextLine();
+                                            //
+                                            cleanScreen();
+                                            for(int i = 0 ; i < farmacos.size() ; i++){
+                                                if(changePriceFarmaco.equalsIgnoreCase((String) farmacos.get(i))){
+                                                    positionFarmaco = i;
+                                                } else {
+                                                    farmacoNoExist++;
+                                                }
+                                            }
+                                            if (farmacoNoExist >= farmacos.size()) {
+                                                System.out.println("                                       ______________________________________");
+                                                System.out.println("                                       |        ESE FARMACO NO EXISTE       |");
+                                                System.out.println("                                       [------------------------------------]");
+                                                continue;
+                                            }
+                                            //
+                                            for(Object farmacoLengthMed: farmacos){
+                                                maxLengthMed = Math.max(maxLengthMed, farmacoLengthMed.toString().length());
+                                            }
+                                            //
+                                            for(Object farmacoLengthPrice: farmacosPrice){
+                                                maxLengthPrice = Math.max(maxLengthPrice, farmacoLengthPrice.toString().length());
+                                            }
+                                            //
+                                            System.out.printf("                                             %-" + maxLengthMed + "s x%-" + maxLengthPrice + "s%n", farmacos.get(positionFarmaco), farmacosPrice.get(positionFarmaco));
+                                            System.out.println("                                       ______________________________________");
+                                            System.out.println("                                       [------------------------------------]");
+                                            System.out.println("                                       | INGRESE EL NUEVO PRECIO POR UNIDAD |");
+                                            System.out.println("                                       [------------------------------------]");
+                                            System.out.print("                                       -> "); newValueToChangePrice = sc.nextFloat();
+                                            //
+                                            farmacosPrice.set(positionFarmaco, newValueToChangePrice);
+                                            //
+                                            cleanScreen();
+                                            System.out.printf("                                            %-" + maxLengthMed + "s Bs.%-" + maxLengthPrice + "s%n", farmacos.get(positionFarmaco), farmacosPrice.get(positionFarmaco));
+                                            System.out.println("                                       ______________________________________");
+                                            //
+                                            if (farmacos.isEmpty()){
+                                                System.out.println("                                       |------------------------------------|");
+                                                System.out.println("                                       |      EL INVENTARIO ESTA VACÍO      |");
+                                                System.out.println("                                       |-----|------------------------------|");
+                                                System.out.println("                                       |  1  |            VOLVER            |");
+                                                System.out.println("                                       |-----|------------------------------|");
+                                                System.out.print("                                       -> ");
+                                                selectorRemoveLote = sc.nextInt();
+                                                cleanScreen();
+                                            } else {
+                                                System.out.println("                                       |-----|------------------------------|");
+                                                System.out.println("                                       |  1  |            VOLVER            |");
+                                                System.out.println("                                       |-----|------------------------------|");
+                                                System.out.println("                                       |  2  |      CAMBIAR OTRO PRECIO     |");
+                                                System.out.println("                                       |-----|------------------------------|");
+                                                System.out.print("                                       -> ");
+                                                selectorChangePrice = sc.nextInt();
+                                                cleanScreen();
+                                                //
+                                                if(selectorChangePrice != 2 || selectorChangePrice != 1){
+                                                    cleanScreen();
+                                                    System.out.println("                                       |------------------------------------|");
+                                                    System.out.println("                                       |    DEBE ELEGIR UNA OPCION (1 - 2)  |");
+                                                    System.out.println("                                       |------------------------------------|");
+                                                    System.out.println(" ");
+                                                }
+                                            }
+                                            //
+                                        } while (selectorChangePrice != 1);
                                         break;
                                     case 4:
                                         cleanScreen();
@@ -418,7 +525,7 @@ class Proyecto_1{
                                     System.out.println("                                   ----------------------------------------------");
                                     //
                                     for (int i = 0 ; i < farmacos.size() ; i++){
-                                        System.out.printf("                                       %-" + maxLengthMed + "s     x%-" + maxLengthQuantity + "d      Bs.%-" + maxLengthPrice + "f%n", farmacos.get(i), farmacosQuantity.get(i), farmacosPrice.get(i));
+                                        System.out.printf("                                       %-" + maxLengthMed + "s     x%-" + maxLengthQuantity + "d      Bs.%-" + maxLengthPrice + "s%n", farmacos.get(i), farmacosQuantity.get(i), farmacosPrice.get(i));
                                         System.out.println("                                   ----------------------------------------------");
                                     }
                                     //
